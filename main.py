@@ -40,6 +40,18 @@ def parseJson(filepath):
     for task in tasks:
         for item in tasks[task]:
             out.append(item)
+
+
+    for item in out:
+        idx = out.index(item)
+
+        for i in (0, len(out) - 1):
+            if i == idx:
+                continue
+            else:
+                if out[i] == item:
+                    out.remove(out[i])
+
     return out
 
 def orderTasks(tasks):
