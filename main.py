@@ -1,6 +1,7 @@
 import json
 import os
 import pathlib as pl
+import ordered_set
 import argparse
 import unittest
 
@@ -19,8 +20,8 @@ class ActualTest(TestBaseCase):
         path = pl.Path(FILENAME)
         self.assertIsFile(path)
 
-    def test_read(self):
-        self.assertTrue(str(tasks))
+    def test_todo(self):
+        self.assertTrue(isinstance(parseJson(FILENAME), list))
 
 ## ------------------------
 
@@ -28,11 +29,48 @@ def readJson(fp):
     with open(fp, "r") as file:
        tasks = file.read()
 
-    return tasks
+    output = json.loads(tasks)
+    return output
 
-tasks = readJson(FILENAME)
-obj = json.loads(tasks)
-print(obj, ", TYPE:", type(obj))
+def parseJson(filepath):
+    tasks = readJson(filepath)
+
+    todo = []
+
+    for task in tasks:
+        for item in tasks[task]:
+            todo.append(item)
+
+    return todo
+
+def orderTasks(tasks):
+    tempTasks = sorted(tasks, key=lambda d: d["id"])
+    sortedTasks = ordered_set()
+
+    for task in tempTasks:
+        if task['depends_on'] == []:
+            sortedTasks.add(task)
+            tempTasks.remove(task)
+
+    while len(tempTasks) > 0:
+        for task in tempTasks:
+            deps = set(task['depends_on'])
+            existing = set()
+            for e in sortedTasks:
+                existing.add(e['id'])
+            if deps.issubset(existing):
+                sortedTasks.add(task)
+                tempTasks.remove(task)
+
+    return sortedTasks
+
+def executeTasks(tasks):
+    for task in tasks:
+        print(task['action'], '\n')
+
+tasks        = parseJson(FILENAME)
+orderedTasks = orderTasks(tasks)
+executeTasks(orderedTasks)
 
 if __name__ == '__main__':
     unittest.main()
