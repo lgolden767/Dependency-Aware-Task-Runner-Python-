@@ -1,7 +1,7 @@
 import json
 import os
 import pathlib as pl
-import ordered_set
+from ordered_set import OrderedSet
 import argparse
 import unittest
 
@@ -35,21 +35,20 @@ def readJson(fp):
 def parseJson(filepath):
     tasks = readJson(filepath)
 
-    todo = []
+    out = []
 
     for task in tasks:
         for item in tasks[task]:
-            todo.append(item)
-
-    return todo
+            out.append(item)
+    return out
 
 def orderTasks(tasks):
     tempTasks = sorted(tasks, key=lambda d: d["id"])
-    sortedTasks = ordered_set()
+    sortedTasks = []
 
     for task in tempTasks:
         if task['depends_on'] == []:
-            sortedTasks.add(task)
+            sortedTasks.append(task)
             tempTasks.remove(task)
 
     while len(tempTasks) > 0:
@@ -59,7 +58,7 @@ def orderTasks(tasks):
             for e in sortedTasks:
                 existing.add(e['id'])
             if deps.issubset(existing):
-                sortedTasks.add(task)
+                sortedTasks.append(task)
                 tempTasks.remove(task)
 
     return sortedTasks
