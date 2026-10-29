@@ -1,0 +1,44 @@
+{
+  "tasks": [
+    {
+      "id": "report",
+      "depends_on": ["analyze", "chart"],
+      "action": "Generating final report"
+    },
+    {
+      "id": "clean",
+      "depends_on": ["download"],
+      "action": "Cleaning downloaded data"
+    },
+    {
+      "id": "backup",
+      "depends_on": ["download"],
+      "action": "Backing up raw data"
+    },
+    {
+      "id": "notify",
+      "depends_on": ["report", "backup"],
+      "action": "Sending completion notification"
+    },
+    {
+      "id": "download",
+      "depends_on": [],
+      "action": "Downloading data"
+    },
+    {
+      "id": "chart",
+      "depends_on": ["analyze"],
+      "action": "Creating charts"
+    },
+    {
+      "id": "archive",
+      "depends_on": [],
+      "action": "Archiving previous results"
+    },
+    {
+      "id": "analyze",
+      "depends_on": ["clean"],
+      "action": "Analyzing cleaned data"
+    }
+  ]
+}
